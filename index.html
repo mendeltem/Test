@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sudah Makan? — Malaysian cooking tutorials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --porcelain:#E9EDE4;
+  --paper:#F7F8F3;
+  --ink:#16241F;
+  --ink-soft:#4A5B53;
+  --jade:#0F6B54;
+  --cobalt:#25508F;
+  --coral:#C0392E;
+  --gula:#B07514;
+  --plum:#7A2E56;
+  --teal:#0E7C86;
+  --line:rgba(22,36,31,.14);
+  --display:"Gloock",Georgia,"Times New Roman",serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --pad:clamp(16px,4vw,40px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--porcelain);color:var(--ink);
+  font-family:var(--body);font-size:17px;line-height:1.6;
+}
+.wrap{max-width:1100px;margin:0 auto;padding:0 var(--pad)}
+a{color:var(--cobalt)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gula);outline-offset:3px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:clamp(28px,6vw,64px) 0 22px}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--jade);margin:0 0 14px
+}
+h1{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(48px,11vw,104px);line-height:.92;margin:0;letter-spacing:-.01em
+}
+h1 .q{color:var(--coral)}
+.standfirst{max-width:52ch;margin:18px 0 0;color:var(--ink-soft)}
+
+/* the tile band: pure CSS majolica strip, also used as a section rule */
+.band{
+  height:26px;margin:26px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 0 50%,var(--jade) 26%,transparent 27%),
+    radial-gradient(circle at 100% 50%,var(--coral) 26%,transparent 27%),
+    radial-gradient(circle at 50% 0,var(--cobalt) 22%,transparent 23%),
+    radial-gradient(circle at 50% 100%,var(--gula) 22%,transparent 23%);
+  background-size:26px 26px;
+}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:22px 0 6px}
+.search{
+  flex:1 1 240px;min-width:200px;display:flex;align-items:center;gap:10px;
+  background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:10px 14px
+}
+.search input{border:0;background:none;outline:none;width:100%;font:inherit;color:var(--ink)}
+.search input::placeholder{color:#93a099}
+.search .hint{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  background:none;border:1px solid var(--line);border-radius:2px;padding:8px 13px;cursor:pointer;
+  font-size:14px;letter-spacing:.01em
+}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--porcelain);border-color:var(--ink)}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding:4px 0 0}
+
+/* ---------- tile grid ---------- */
+.tiles{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px;padding:14px 0 40px;margin:0;list-style:none
+}
+.tile{
+  position:relative;display:block;width:100%;text-align:left;cursor:pointer;
+  border:1px solid var(--line);border-radius:2px;background:var(--paper);
+  padding:0;overflow:hidden;color:inherit
+}
+.tile .art{
+  position:relative;aspect-ratio:5/3;
+  background-color:color-mix(in srgb,var(--c) 8%,var(--paper));
+  background-image:
+    radial-gradient(circle at 0 0,var(--c) 20%,transparent 21%),
+    radial-gradient(circle at 100% 0,var(--c) 20%,transparent 21%),
+    radial-gradient(circle at 0 100%,var(--c) 20%,transparent 21%),
+    radial-gradient(circle at 100% 100%,var(--c) 20%,transparent 21%),
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--c) 45%,var(--paper)) 15%,transparent 16%);
+  background-size:44px 44px;
+  transition:background-size .35s ease
+}
+.tile:hover .art,.tile:focus-visible .art{background-size:52px 52px}
+.tile .plaque{padding:14px 16px 16px;border-top:1px solid var(--line);background:var(--paper)}
+.tile .name{font-family:var(--display);font-size:24px;line-height:1.15;display:block}
+.tile .gloss{font-size:14px;color:var(--ink-soft);display:block;margin-top:2px}
+.tile .meta{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--c);margin-top:10px;display:block
+}
+.empty{padding:40px 0 60px;color:var(--ink-soft)}
+
+/* ---------- recipe ---------- */
+#recipe{padding-bottom:60px}
+.back{
+  background:none;border:0;padding:22px 0 0;cursor:pointer;font-family:var(--mono);
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--jade)
+}
+.rhead{padding:10px 0 0;border-bottom:1px solid var(--line)}
+.rhead h2{font-family:var(--display);font-weight:400;font-size:clamp(38px,8vw,72px);line-height:1;margin:8px 0 6px}
+.rhead .gloss{color:var(--ink-soft);margin:0 0 6px;font-size:18px}
+.facts{
+  display:flex;flex-wrap:wrap;gap:0 28px;padding:14px 0 18px;margin:0;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)
+}
+.facts b{color:var(--ink);font-weight:500}
+.intro{max-width:62ch;margin:20px 0 0}
+
+.cols{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:clamp(24px,5vw,56px);padding-top:26px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+
+/* ingredients panel */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:20px}
+@media (min-width:861px){.panel{position:sticky;top:18px}}
+.scaler{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
+.scaler .lab{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:auto}
+.step-btn{
+  width:34px;height:34px;border:1px solid var(--line);background:var(--porcelain);border-radius:2px;
+  cursor:pointer;font-size:19px;line-height:1
+}
+.step-btn:disabled{opacity:.35;cursor:not-allowed}
+.serves{font-family:var(--mono);font-size:19px;min-width:2.2ch;text-align:center}
+h3.grp{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--jade);margin:20px 0 8px;font-weight:500
+}
+h3.grp:first-of-type{margin-top:0}
+ul.ing{list-style:none;margin:0;padding:0}
+ul.ing li{display:flex;gap:12px;padding:5px 0;border-bottom:1px dotted var(--line);font-size:15.5px}
+ul.ing li:last-child{border-bottom:0}
+ul.ing .q{font-family:var(--mono);font-size:14.5px;white-space:nowrap;min-width:6.5em;color:var(--ink)}
+ul.ing .n small{display:block;color:var(--ink-soft);font-size:13px;line-height:1.4}
+
+/* steps */
+.stepshead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.stepshead h3{font-family:var(--display);font-weight:400;font-size:30px;margin:0}
+.progress{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.reset{background:none;border:0;text-decoration:underline;cursor:pointer;font-size:13.5px;color:var(--ink-soft);padding:0}
+ol.steps{list-style:none;counter-reset:s;margin:14px 0 0;padding:0}
+ol.steps li{
+  counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:14px;
+  padding:16px 0;border-top:1px solid var(--line)
+}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:13px;color:var(--gula);
+  padding-top:4px
+}
+ol.steps .box{display:flex;gap:12px;align-items:flex-start}
+ol.steps input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--jade);flex:none}
+ol.steps .t{font-weight:600;display:block}
+ol.steps .clock{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-left:8px;font-weight:400}
+ol.steps p{margin:2px 0 0;max-width:62ch}
+li.done .t,li.done p{opacity:.45;text-decoration-color:var(--line)}
+li.done .t{text-decoration:line-through}
+
+.notes{margin-top:34px;border-left:3px solid var(--coral);padding:2px 0 2px 18px}
+.notes h3{font-family:var(--display);font-weight:400;font-size:26px;margin:0 0 8px}
+.notes li{margin-bottom:10px;max-width:62ch}
+.notes ul{padding-left:18px;margin:0}
+
+/* glossary */
+#glossary{padding:8px 0 70px}
+#glossary h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,44px);margin:26px 0 4px}
+#glossary p.lede{color:var(--ink-soft);margin:0 0 20px;max-width:60ch}
+.gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2px;background:var(--line);border:1px solid var(--line)}
+.gloss-grid div{background:var(--paper);padding:16px 18px}
+.gloss-grid dt{font-weight:600}
+.gloss-grid dt span{font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:block;font-weight:400}
+.gloss-grid dd{margin:6px 0 0;font-size:15px;color:var(--ink-soft)}
+footer{border-top:1px solid var(--line);padding:22px 0 50px;font-size:14px;color:var(--ink-soft)}
+.print{background:none;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;font-size:13.5px}
+
+[hidden]{display:none !important}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+@media print{
+  .controls,.back,.print,#glossary,footer,.band{display:none}
+  body{background:#fff;font-size:12pt}
+  .cols{grid-template-columns:1fr}
+  .panel{position:static;border:0;padding:0}
+  ol.steps li{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Malaysian home cooking · 7 tutorials</p>
+    <h1>Sudah makan<span class="q">?</span></h1>
+    <p class="standfirst">Have you eaten yet — the standard Malaysian hello. Seven classics written for a normal kitchen: set the servings and every amount follows, tick steps off as you go, and read the notes before you start, because most of these dishes are won or lost on one cue.</p>
+    <div class="band" aria-hidden="true"></div>
+  </header>
+</div>
+
+<main class="wrap">
+  <section id="browse">
+    <div class="controls">
+      <label class="search">
+        <span class="hint">Search</span>
+        <input id="q" type="search" placeholder="dish, ingredient, technique" autocomplete="off">
+      </label>
+      <div class="chips" id="chips" role="group" aria-label="Filter by course"></div>
+    </div>
+    <p class="count" id="count"></p>
+    <ul class="tiles" id="tiles"></ul>
+    <p class="empty" id="empty" hidden>Nothing matches that. Clear the search or pick another course.</p>
+  </section>
+
+  <article id="recipe" hidden></article>
+
+  <section id="glossary">
+    <div class="band" aria-hidden="true"></div>
+    <h2>Pantry</h2>
+    <p class="lede">The fifteen things that keep coming back. Anything with a substitute listed will still give you a good dish; anything without one is doing work nothing else does.</p>
+    <dl class="gloss-grid" id="gloss"></dl>
+  </section>
+</main>
+
+<footer class="wrap">
+  Amounts scale from the servings control and are rounded to something you can actually measure. Nothing is saved when you close the page.
+</footer>
+
+<script>
+/* ---------------------------------------------------------------
+   data
+--------------------------------------------------------------- */
+const COURSES = [
+  {id:"rice",   label:"Rice",     color:"var(--gula)"},
+  {id:"curry",  label:"Curry",    color:"var(--coral)"},
+  {id:"noodles",label:"Noodles",  color:"var(--cobalt)"},
+  {id:"bread",  label:"Bread",    color:"var(--jade)"},
+  {id:"grill",  label:"Grill",    color:"var(--plum)"},
+  {id:"drink",  label:"Drink",    color:"var(--teal)"}
+];
+
+const RECIPES = [
+{
+  id:"nasi-lemak", name:"Nasi Lemak", gloss:"Coconut rice with sambal, anchovies and egg",
+  course:"rice", serves:4, time:"1 h 15 min", level:"Beginner, but the sambal needs patience",
+  intro:"The national breakfast. Two things carry it: rice cooked in coconut milk so it tastes rich without being greasy, and a sambal fried long enough that the oil separates out and turns red. Everything else on the plate is a side.",
+  groups:[
+    {name:"Coconut rice", items:[
+      {q:400,u:"g",n:"jasmine rice",note:"rinsed until the water runs almost clear"},
+      {q:400,u:"ml",n:"coconut milk"},
+      {q:200,u:"ml",n:"water"},
+      {q:2,u:"",n:"pandan leaves, knotted",note:"or leave out; no substitute tastes the same"},
+      {q:3,u:"slices",n:"ginger"},
+      {q:2,u:"",n:"shallots, halved"},
+      {q:1.5,u:"tsp",n:"salt"}
+    ]},
+    {name:"Sambal", items:[
+      {q:15,u:"",n:"dried chillies",note:"soaked in hot water 20 min, seeds shaken out for less heat"},
+      {q:8,u:"",n:"shallots"},
+      {q:3,u:"cloves",n:"garlic"},
+      {q:1,u:"tsp",n:"belacan",note:"toasted in a dry pan until it smells sharp"},
+      {q:4,u:"tbsp",n:"oil"},
+      {q:1,u:"",n:"onion, in thick rings"},
+      {q:60,u:"g",n:"ikan bilis",note:"dried anchovies, rinsed and dried"},
+      {q:2,u:"tbsp",n:"gula melaka or brown sugar"},
+      {q:1,u:"tbsp",n:"tamarind pulp",note:"squeezed into 100 ml warm water, seeds discarded"},
+      {q:1,u:"tsp",n:"salt"}
+    ]},
+    {name:"To serve", items:[
+      {q:4,u:"",n:"eggs"},
+      {q:1,u:"",n:"cucumber, sliced"},
+      {q:60,u:"g",n:"roasted peanuts"},
+      {q:60,u:"g",n:"ikan bilis, fried crisp"},
+      {q:300,u:"ml",n:"oil for frying",fixed:true,note:"same oil does the anchovies and the peanuts"}
+    ]}
+  ],
+  steps:[
+    {t:"Fry the anchovies and peanuts",time:"10 min",d:"Fry the ikan bilis in medium-hot oil until they stop bubbling and turn pale gold, about 3 minutes. Drain on paper. Fry the peanuts 2 minutes if they are raw. Both keep crisp for hours; do them first and get them out of the way."},
+    {t:"Blend the sambal paste",time:"5 min",d:"Drain the chillies. Blend chillies, shallots, garlic and belacan with a splash of water into a coarse paste. Coarse is right here — a completely smooth paste turns pasty when fried."},
+    {t:"Fry the paste until the oil splits",time:"20 min",d:"Heat the oil in a wide pan and fry the paste on medium-low, stirring often. It goes from wet orange to dark red, and at some point a rim of clear red oil separates at the edge. That is pecah minyak and it is the whole point of the step. Do not rush it on high heat; it will taste raw."},
+    {t:"Season and finish",time:"10 min",d:"Add tamarind water, sugar and salt. Simmer 5 minutes, then stir in the onion rings and the fried anchovies. Take it off while the onions still have some bite. Taste: it should be sweet first, then hot, then sour."},
+    {t:"Cook the rice",time:"25 min",d:"Put rice, coconut milk, water, salt, pandan, ginger and shallots in a rice cooker or heavy pot. If using a pot: bring to a boil uncovered, then cover and cook on the lowest heat for 12 minutes and rest 10 minutes off the heat. Do not stir while it cooks — coconut milk sticks and scorches."},
+    {t:"Boil the eggs",time:"9 min",d:"Eggs into boiling water for 8 minutes, then straight into cold water. Halve them."},
+    {t:"Build the plate",d:"Fluff the rice with a fork and mound it in the middle. Sambal on one side, then cucumber, egg, peanuts and anchovies around it. Traditionally wrapped in banana leaf, which perfumes the rice while it sits."}
+  ],
+  notes:[
+    "Pecah minyak, the oil splitting out, is the only reliable doneness cue for sambal. Colour alone will fool you.",
+    "The sambal is better the next day and keeps a week in the fridge under a film of its own oil. Make double.",
+    "Coconut milk to water at 2:1 gives rich rice that still separates into grains. All coconut milk turns it heavy and it spoils faster."
+  ]
+},
+{
+  id:"rendang", name:"Rendang Ayam", gloss:"Chicken slow-braised dry in coconut and spice",
+  course:"curry", serves:5, time:"2 h", level:"Easy work, long attention",
+  intro:"Rendang is not a curry, it is a braise that is deliberately cooked past the point where the sauce disappears. The coconut milk reduces, splits, and then fries the meat in its own oil. If it is still soupy, it is not finished.",
+  groups:[
+    {name:"Spice paste (rempah)", items:[
+      {q:12,u:"",n:"dried chillies",note:"soaked 20 min"},
+      {q:10,u:"",n:"shallots"},
+      {q:5,u:"cloves",n:"garlic"},
+      {q:4,u:"cm",n:"galangal"},
+      {q:3,u:"cm",n:"ginger"},
+      {q:2,u:"cm",n:"fresh turmeric",note:"or 1 tsp ground"},
+      {q:3,u:"stalks",n:"lemongrass",note:"white part only, sliced"}
+    ]},
+    {name:"Braise", items:[
+      {q:1200,u:"g",n:"chicken thighs and drumsticks, bone in"},
+      {q:4,u:"tbsp",n:"oil"},
+      {q:400,u:"ml",n:"coconut milk"},
+      {q:200,u:"ml",n:"water"},
+      {q:2,u:"stalks",n:"lemongrass, bruised whole"},
+      {q:4,u:"",n:"kaffir lime leaves"},
+      {q:1,u:"",n:"turmeric leaf, finely shredded",note:"optional, but it is the smell of the dish"},
+      {q:4,u:"tbsp",n:"kerisik",note:"toasted grated coconut, pounded to a paste"},
+      {q:2,u:"tbsp",n:"tamarind juice"},
+      {q:2,u:"tbsp",n:"gula melaka"},
+      {q:2,u:"tsp",n:"salt"}
+    ]}
+  ],
+  steps:[
+    {t:"Make the kerisik",time:"12 min",d:"Toast grated coconut in a dry pan on medium-low, stirring constantly, until it is dark brown and smells nutty — 10 minutes or so, and it goes from pale to burnt fast at the end. Pound or blitz until it turns oily and clumps. Skip the shop-bought version if you can; it is usually stale."},
+    {t:"Blend the rempah",time:"5 min",d:"Blend the paste ingredients with as little water as possible. Water added now has to be cooked off later."},
+    {t:"Fry the rempah",time:"15 min",d:"Fry the paste in oil on medium heat until it darkens and the oil separates. Same cue as sambal: you are looking for the oil, not the clock."},
+    {t:"Add chicken and coconut milk",time:"5 min",d:"Turn the chicken in the paste for 2 minutes until coated, then pour in the coconut milk, water, bruised lemongrass and lime leaves. Bring to a bare simmer."},
+    {t:"Reduce, uncovered",time:"60 min",d:"Simmer uncovered on low, stirring every 10 minutes and more often as it thickens. The liquid drops, then the sauce goes glossy, then the oil separates and the whole thing starts to fry rather than boil. That is the finish line."},
+    {t:"Kerisik, sugar, salt",time:"15 min",d:"Stir in kerisik, turmeric leaf, tamarind and gula melaka in the last quarter hour. Season now, not earlier — a dish that loses this much water will over-salt itself if you season at the start."},
+    {t:"Rest",d:"Take it off when the meat is coated in a dark, almost dry paste. Rest at least 30 minutes. It is better the next day and freezes well."}
+  ],
+  notes:[
+    "Thighs, not breast. Ninety minutes of braising leaves breast meat like string.",
+    "Coconut milk from a carton with stabilisers resists splitting, which is exactly what you need it to do. Use tinned, full fat.",
+    "If you want it wetter, stop at the glossy stage and call it kalio. That is a real dish, just not this one."
+  ]
+},
+{
+  id:"char-kway-teow", name:"Char Kway Teow", gloss:"Flat rice noodles fried hard with prawns and cockles",
+  course:"noodles", serves:2, time:"25 min, 4 of them cooking",
+  level:"Technically the hardest here",
+  intro:"A three-minute dish with a twenty-minute setup. What separates a good plate from a sad one is wok hei: the scorched, faintly smoky note you only get from a screaming hot wok and a small amount of food. Cook one portion at a time. Two portions in the pan means steamed noodles.",
+  groups:[
+    {name:"Per portion", items:[
+      {q:200,u:"g",n:"fresh flat rice noodles",note:"room temperature, separated by hand, never cold from the fridge"},
+      {q:6,u:"",n:"prawns, peeled"},
+      {q:60,u:"g",n:"cockles",note:"optional; blanched 10 seconds and shelled"},
+      {q:2,u:"tbsp",n:"lard or oil",note:"lard is not optional if you want the original taste"},
+      {q:3,u:"slices",n:"Chinese sausage (lap cheong)"},
+      {q:2,u:"cloves",n:"garlic, chopped"},
+      {q:1,u:"tbsp",n:"chilli paste"},
+      {q:1,u:"",n:"egg"},
+      {q:60,u:"g",n:"bean sprouts"},
+      {q:1,u:"handful",n:"garlic chives, in 4 cm lengths"}
+    ]},
+    {name:"Sauce, mixed in advance", items:[
+      {q:1,u:"tbsp",n:"light soy sauce"},
+      {q:1,u:"tsp",n:"dark soy sauce",note:"thick caramel type, for colour"},
+      {q:1,u:"tsp",n:"oyster sauce"},
+      {q:0.5,u:"tsp",n:"sugar"},
+      {q:0.25,u:"tsp",n:"white pepper"}
+    ]}
+  ],
+  steps:[
+    {t:"Set everything out first",time:"15 min",d:"Every ingredient prepped, sauce mixed in one bowl, plate ready. Once the wok is hot there is no time to chop anything."},
+    {t:"Separate the noodles",d:"Pull the noodle sheets apart by hand into loose strands. Cold noodles break; if they came out of the fridge, microwave 20 seconds or dunk briefly in warm water and drain very dry."},
+    {t:"Get the wok properly hot",time:"3 min",d:"Empty wok on maximum until it is faintly smoking. Then the lard. If the fat does not shimmer and move like water, wait longer."},
+    {t:"Aromatics and protein",time:"45 sec",d:"Garlic and lap cheong for 10 seconds, then the chilli paste for 10 seconds, then the prawns until they just turn opaque. Keep everything moving."},
+    {t:"Noodles and sauce",time:"60 sec",d:"Noodles in, sauce round the edge of the wok rather than onto the pile, then toss. Press the noodles against the metal for a few seconds at a time to get contact and char, then flip. Do not stir constantly."},
+    {t:"Egg",time:"30 sec",d:"Push the noodles up one side, crack the egg into the clear space, break the yolk, let it set for 15 seconds, then fold it through in large pieces."},
+    {t:"Sprouts, chives, cockles",time:"20 sec",d:"In at the very end. They should stay crunchy and the cockles should just warm through. Plate immediately; the dish dies within a minute of leaving the wok."}
+  ],
+  notes:[
+    "A domestic burner will never match a hawker's. Compensate by halving the portion, not by turning up the time.",
+    "Dark soy is for colour, light soy for salt. Swapping them gives you either a pale bland plate or a bitter black one.",
+    "No wok? A carbon steel skillet beats a nonstick pan, which cannot be heated hard enough to char anything."
+  ]
+},
+{
+  id:"curry-laksa", name:"Curry Laksa", gloss:"Coconut curry noodle soup with tofu puffs and prawns",
+  course:"noodles", serves:4, time:"1 h",
+  level:"Straightforward once the paste is fried",
+  intro:"The Kuala Lumpur style: a coconut curry broth, not the sour fish-based asam laksa of Penang. Two noodles in one bowl is standard, and the tofu puffs matter more than they look — they are sponges that carry the soup.",
+  groups:[
+    {name:"Laksa paste", items:[
+      {q:10,u:"",n:"dried chillies",note:"soaked"},
+      {q:6,u:"",n:"shallots"},
+      {q:4,u:"cloves",n:"garlic"},
+      {q:3,u:"cm",n:"galangal"},
+      {q:2,u:"stalks",n:"lemongrass"},
+      {q:2,u:"cm",n:"fresh turmeric"},
+      {q:6,u:"",n:"candlenuts",note:"or macadamias; they thicken the broth"},
+      {q:1,u:"tsp",n:"belacan, toasted"},
+      {q:1,u:"tbsp",n:"meat curry powder"}
+    ]},
+    {name:"Broth", items:[
+      {q:4,u:"tbsp",n:"oil"},
+      {q:1000,u:"ml",n:"chicken stock"},
+      {q:400,u:"ml",n:"coconut milk"},
+      {q:2,u:"",n:"chicken thighs, boneless"},
+      {q:8,u:"",n:"prawns"},
+      {q:8,u:"",n:"tofu puffs, halved"},
+      {q:1,u:"tbsp",n:"sugar"},
+      {q:2,u:"tsp",n:"salt"}
+    ]},
+    {name:"Bowl", items:[
+      {q:400,u:"g",n:"fresh yellow noodles"},
+      {q:150,u:"g",n:"rice vermicelli, soaked"},
+      {q:150,u:"g",n:"bean sprouts, blanched 10 seconds"},
+      {q:1,u:"",n:"lime, in wedges"},
+      {q:4,u:"tsp",n:"sambal, to serve"},
+      {q:1,u:"handful",n:"mint or laksa leaf"}
+    ]}
+  ],
+  steps:[
+    {t:"Blend the paste",time:"5 min",d:"Everything into the blender with a little oil rather than water. Candlenuts must be blended fine; they are what gives the broth body without flour."},
+    {t:"Fry it",time:"15 min",d:"Medium heat, stirring, until dark and split. Fifteen minutes is normal. Undercooked paste tastes chalky and no amount of simmering later fixes it."},
+    {t:"Build the broth",time:"20 min",d:"Add the stock, bring to a simmer, drop in the chicken thighs and poach 15 minutes. Lift them out, slice, set aside."},
+    {t:"Coconut milk in last",time:"8 min",d:"Add coconut milk and tofu puffs and hold it just under a simmer. A hard boil after the coconut milk goes in makes the broth grainy and dulls the colour. Season with sugar and salt."},
+    {t:"Prawns",time:"3 min",d:"Poach the prawns in the broth for 2 minutes, no more."},
+    {t:"Noodles",time:"2 min",d:"Blanch yellow noodles and vermicelli separately for 30 seconds each, drain hard, and divide between bowls with the bean sprouts."},
+    {t:"Assemble",d:"Chicken, prawns and tofu puffs on top, ladle over the broth, then sambal, lime and herbs at the table so everyone sets their own heat and sourness."}
+  ],
+  notes:[
+    "Tofu puffs are hollow and will spit hot soup at you. Squeeze them in the broth with a spoon before you serve.",
+    "Shop-bought laksa paste plus your own fried shallots and fresh coconut milk gets you most of the way in 20 minutes. Say so honestly and no one minds.",
+    "This is curry laksa. Asam laksa is a different dish built on mackerel and tamarind, not coconut."
+  ]
+},
+{
+  id:"roti-canai", name:"Roti Canai", gloss:"Flaky flipped flatbread",
+  course:"bread", serves:6, time:"30 min work, 6 h resting",
+  level:"The stretch takes a few tries",
+  intro:"Almost all of the work is done by time. Rested dough becomes slack enough to pull to the size of a table without tearing, and no amount of kneading substitutes for that rest. The flipping is showmanship; a slow careful stretch gives the same layers.",
+  groups:[
+    {name:"Dough", items:[
+      {q:500,u:"g",n:"plain flour"},
+      {q:1,u:"tsp",n:"salt"},
+      {q:1,u:"tbsp",n:"sugar"},
+      {q:1,u:"tbsp",n:"condensed milk"},
+      {q:1,u:"",n:"egg"},
+      {q:270,u:"ml",n:"water",note:"warm; add the last 30 ml only if the dough is dry"},
+      {q:60,u:"g",n:"ghee or margarine, softened"}
+    ]},
+    {name:"For coating and cooking", items:[
+      {q:150,u:"ml",n:"neutral oil",fixed:true,note:"the dough balls sit submerged in it while they rest"},
+      {q:60,u:"g",n:"ghee",fixed:true,note:"for the griddle"}
+    ]}
+  ],
+  steps:[
+    {t:"Mix",time:"5 min",d:"Flour, salt and sugar in a bowl. Whisk condensed milk, egg and water, pour in, and bring together into a shaggy dough."},
+    {t:"Knead",time:"10 min",d:"Knead until smooth and elastic, then work in the softened ghee. It will look broken for a minute and then come back together. The dough should be soft and slightly tacky, not stiff."},
+    {t:"Portion and drown",time:"5 min",d:"Divide into 6 balls. Roll each smooth, put them in a deep tray and pour oil over until they are half submerged."},
+    {t:"Rest",time:"6 h",d:"Cover and leave at room temperature for at least 4 hours, better 6 to 8, or overnight in the fridge. This is the step that makes the bread possible. Cold dough must come back to room temperature before stretching."},
+    {t:"Stretch",time:"2 min each",d:"On a lightly oiled worktop, flatten a ball with your palm, then push it outwards from the centre with oiled fingertips until it is a thin, almost transparent sheet. Repair holes by pinching. If it springs back, it needs another hour of rest."},
+    {t:"Fold",d:"Fold the sheet into a loose square: bring in left and right thirds, then top and bottom. Loose is important — every trapped air gap becomes a layer."},
+    {t:"Griddle",time:"4 min each",d:"Medium-hot pan, a spoon of ghee, roti in, 2 minutes a side until blistered and brown in patches. Take it out and clap it between your hands, or squash it once from the sides; that shatters the layers apart."}
+  ],
+  notes:[
+    "Oil, not flour, on the worktop. Flour makes the dough grip and tear.",
+    "A pan that is too hot browns the outside before the middle layers set, and the roti stays doughy inside.",
+    "Serve with dhal or a thin chicken curry. Roti telur is the same dough with an egg smeared on before folding."
+  ]
+},
+{
+  id:"satay", name:"Satay Ayam", gloss:"Turmeric chicken skewers with peanut sauce",
+  course:"grill", serves:6, time:"40 min plus 4 h marinating",
+  level:"Easy, needs live fire",
+  intro:"Charcoal is doing half the cooking here. The marinade is dry and sugary so it caramelises quickly, which is why satay is grilled over hot coals in minutes rather than roasted. The peanut sauce is a separate recipe that happens to be served alongside.",
+  groups:[
+    {name:"Skewers", items:[
+      {q:700,u:"g",n:"chicken thigh, in 2 cm cubes"},
+      {q:4,u:"",n:"shallots"},
+      {q:2,u:"cloves",n:"garlic"},
+      {q:2,u:"stalks",n:"lemongrass"},
+      {q:2,u:"cm",n:"galangal"},
+      {q:1,u:"tsp",n:"ground turmeric"},
+      {q:1,u:"tsp",n:"ground coriander"},
+      {q:0.5,u:"tsp",n:"ground cumin"},
+      {q:2,u:"tbsp",n:"sugar"},
+      {q:1,u:"tsp",n:"salt"},
+      {q:2,u:"tbsp",n:"oil"},
+      {q:24,u:"",n:"bamboo skewers",fixed:true,note:"soaked in water 30 min"}
+    ]},
+    {name:"Peanut sauce", items:[
+      {q:200,u:"g",n:"roasted peanuts",note:"ground coarse, not to butter"},
+      {q:8,u:"",n:"dried chillies, soaked"},
+      {q:6,u:"",n:"shallots"},
+      {q:3,u:"cloves",n:"garlic"},
+      {q:2,u:"stalks",n:"lemongrass"},
+      {q:2,u:"cm",n:"galangal"},
+      {q:4,u:"tbsp",n:"oil"},
+      {q:350,u:"ml",n:"water"},
+      {q:2,u:"tbsp",n:"tamarind juice"},
+      {q:3,u:"tbsp",n:"gula melaka"},
+      {q:1,u:"tsp",n:"salt"}
+    ]},
+    {name:"To serve", items:[
+      {q:1,u:"",n:"cucumber, in chunks"},
+      {q:1,u:"",n:"red onion, in wedges"},
+      {q:4,u:"",n:"ketupat or pressed rice",note:"optional"}
+    ]}
+  ],
+  steps:[
+    {t:"Marinate",time:"10 min work",d:"Blend shallots, garlic, lemongrass and galangal into a paste, mix with the dry spices, sugar, salt and oil, and rub through the chicken. Cover and refrigerate 4 hours or overnight."},
+    {t:"Make the sauce base",time:"15 min",d:"Blend the chilli paste ingredients and fry in oil until the oil separates. This is the same rempah discipline as everything else in Malaysian cooking."},
+    {t:"Finish the sauce",time:"15 min",d:"Add water and the ground peanuts, simmer 10 minutes until thick enough to coat a spoon, then tamarind, gula melaka and salt. It should be thick, sweet, mildly hot and slightly sour. Loosen with water when it cools and stiffens."},
+    {t:"Skewer",time:"15 min",d:"Thread 4 to 5 cubes per stick, pushed close together, leaving a handle. Tightly packed meat stays juicier over fierce heat."},
+    {t:"Grill",time:"10 min",d:"Over hot charcoal, 3 to 4 minutes a side. Baste with oil mixed with a little coconut milk, using a bruised lemongrass stalk as the brush. Watch it: the sugar in the marinade goes from caramel to carbon in under a minute."},
+    {t:"Serve",d:"Pile the sticks on a plate with cucumber, raw onion and rice cakes, sauce in a bowl for dipping. Eaten hot, straight off the grill."}
+  ],
+  notes:[
+    "Grind the peanuts coarse. A smooth sauce reads as satay-flavoured peanut butter.",
+    "Thigh over breast again: 2 cm cubes of breast over live coals are dry before they colour.",
+    "No charcoal? A ridged grill pan under a hot oven grill is second best. A conventional oven bakes them, and it shows."
+  ]
+},
+{
+  id:"teh-tarik", name:"Teh Tarik", gloss:"Pulled milk tea",
+  course:"drink", serves:2, time:"12 min", level:"Two minutes of nerve",
+  intro:"Pulled tea, named for the pour between two vessels. The pulling is not decoration: it aerates the tea into a foam and drops it to drinking temperature in seconds. It only works if the tea underneath is strong enough to taste through that much milk.",
+  groups:[
+    {name:"Tea", items:[
+      {q:20,u:"g",n:"strong black tea dust",note:"Ceylon or a broken-leaf breakfast blend; delicate tea disappears here"},
+      {q:500,u:"ml",n:"boiling water"},
+      {q:4,u:"tbsp",n:"sweetened condensed milk"},
+      {q:3,u:"tbsp",n:"evaporated milk"}
+    ]}
+  ],
+  steps:[
+    {t:"Brew hard",time:"6 min",d:"Steep the tea in just-boiled water for 5 to 6 minutes. It should be almost undrinkably strong and astringent. Strain through a fine sieve or a cloth tea sock."},
+    {t:"Strain it again",time:"1 min",d:"Pour it back and forth through the sock two or three times. Stalls do this to keep the tea hot and even; it also catches the last of the dust."},
+    {t:"Sweeten",time:"1 min",d:"Stir the condensed milk into the hot tea until fully dissolved, then the evaporated milk. Condensed milk is the sugar, evaporated milk is the body — they are not interchangeable."},
+    {t:"Pull",time:"2 min",d:"Split between two jugs with handles. Pour from one to the other, raising the pouring hand as the stream steadies until there is a good arm's length between them, and catch it low. Five to eight pulls builds a thick head of foam."},
+    {t:"Serve",d:"Into a glass, foam on top, drunk immediately. Practise over a sink with cold water first."}
+  ],
+  notes:[
+    "Start with the jugs almost touching and separate them as you gain confidence. Nobody's first pull looks like a stall's.",
+    "Fresh milk does not foam the same way and thins the flavour. Condensed and evaporated milk are the recipe, not a shortcut.",
+    "Same tea without pulling and with less milk is teh o. With ginger it is teh halia."
+  ]
+}
+];
+
+const GLOSSARY = [
+  {t:"Belacan",s:"Fermented shrimp paste",d:"Toast it before use, in foil or a dry pan, until it smells sharp. Raw it tastes flat. Substitute: shrimp paste from any Southeast Asian brand; anchovy paste at half quantity in an emergency."},
+  {t:"Gula melaka",s:"Palm sugar",d:"Sold in dark discs or blocks, smoky and caramel-like. Substitute: dark brown sugar plus a drop of molasses."},
+  {t:"Kerisik",s:"Toasted coconut paste",d:"Grated coconut dry-fried to dark brown and pounded until it releases its oil. Thickens and deepens rendang. No real substitute."},
+  {t:"Ikan bilis",s:"Dried anchovies",d:"Fried crisp as a garnish, or simmered for stock. Rinse and dry them first or they taste dusty."},
+  {t:"Santan",s:"Coconut milk",d:"Use full fat tinned, and shake the tin. Cartons with stabilisers refuse to split, which some recipes need them to do."},
+  {t:"Rempah",s:"Wet spice paste",d:"The blended base of most Malay dishes. It is finished when the oil separates out — not when a timer says so."},
+  {t:"Pecah minyak",s:"\"Broken oil\"",d:"The moment fried paste releases a rim of clear oil. The single most useful doneness cue in this whole cuisine."},
+  {t:"Wok hei",s:"\"Breath of the wok\"",d:"The scorched aroma from food hitting metal above roughly 200 °C. Needs high heat, dry ingredients and small portions."},
+  {t:"Pandan",s:"Screwpine leaf",d:"Knotted and cooked with rice or desserts for a grassy vanilla note. Frozen leaves work. Extract is a distant third."},
+  {t:"Daun kunyit",s:"Turmeric leaf",d:"Shredded fine into rendang. Unmistakable and hard to replace; kaffir lime leaf gives aroma but a different one."},
+  {t:"Asam jawa",s:"Tamarind",d:"Sold as a wet block. Soak a spoonful in warm water, squeeze, discard seeds and fibre, use the liquid. Substitute: lime juice, with less depth."},
+  {t:"Buah keras",s:"Candlenut",d:"Waxy nut blended into pastes as a thickener. Toxic raw in quantity, always cooked. Substitute: macadamia."},
+  {t:"Lengkuas",s:"Galangal",d:"Woody, piney, not a stand-in for ginger and ginger is not a stand-in for it. Frozen slices keep well."},
+  {t:"Taupok",s:"Tofu puffs",d:"Hollow deep-fried tofu that soaks up broth. Squeeze before serving so nobody gets a mouthful of boiling soup."},
+  {t:"Kicap manis",s:"Sweet soy sauce",d:"Thick, molasses-heavy soy. Substitute: dark soy sauce with an equal spoon of palm sugar dissolved into it."}
+];
+
+/* ---------------------------------------------------------------
+   helpers
+--------------------------------------------------------------- */
+const EIGHTHS = ["","⅛","¼","⅜","½","⅝","¾","⅞"];
+
+function formatQty(n){
+  if(n == null) return "";
+  if(n >= 100) return String(Math.round(n/5)*5);
+  if(n >= 20) return String(Math.round(n));
+  if(n >= 10) return String(Math.round(n*2)/2);
+  const e = Math.round(n*8);
+  if(e <= 0) return "⅛";
+  const whole = Math.floor(e/8), rem = e%8;
+  if(whole === 0) return EIGHTHS[rem];
+  return rem ? whole + EIGHTHS[rem] : String(whole);
+}
+
+function courseOf(id){ return COURSES.find(c => c.id === id); }
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+}
+
+const tilesEl = document.getElementById("tiles");
+const chipsEl = document.getElementById("chips");
+const countEl = document.getElementById("count");
+const emptyEl = document.getElementById("empty");
+const searchEl = document.getElementById("q");
+const browseEl = document.getElementById("browse");
+const recipeEl = document.getElementById("recipe");
+
+let activeCourse = "all";
+let query = "";
+let servings = 4;
+let doneSteps = new Set();
+let current = null;
+
+/* ---------------------------------------------------------------
+   browse view
+--------------------------------------------------------------- */
+chipsEl.innerHTML =
+  '<button class="chip" data-course="all" aria-pressed="true">All seven</button>' +
+  COURSES.map(c => '<button class="chip" data-course="'+c.id+'" aria-pressed="false">'+c.label+'</button>').join("");
+
+function haystack(r){
+  const ing = r.groups.flatMap(g => g.items.map(i => i.n + " " + (i.note||""))).join(" ");
+  const steps = r.steps.map(s => s.t + " " + s.d).join(" ");
+  return (r.name+" "+r.gloss+" "+r.intro+" "+ing+" "+steps+" "+courseOf(r.course).label).toLowerCase();
+}
+
+function renderTiles(){
+  const q = query.trim().toLowerCase();
+  const list = RECIPES.filter(r =>
+    (activeCourse === "all" || r.course === activeCourse) &&
+    (q === "" || haystack(r).includes(q))
+  );
+
+  tilesEl.innerHTML = list.map(r => {
+    const c = courseOf(r.course);
+    return '<li><button class="tile" data-id="'+r.id+'" style="--c:'+c.color+'">'+
+      '<span class="art"></span>'+
+      '<span class="plaque">'+
+        '<span class="name">'+esc(r.name)+'</span>'+
+        '<span class="gloss">'+esc(r.gloss)+'</span>'+
+        '<span class="meta">'+esc(c.label)+' · '+esc(r.time)+'</span>'+
+      '</span></button></li>';
+  }).join("");
+
+  countEl.textContent = list.length + (list.length === 1 ? " recipe" : " recipes");
+  emptyEl.hidden = list.length > 0;
+}
+
+chipsEl.addEventListener("click", e => {
+  const btn = e.target.closest(".chip");
+  if(!btn) return;
+  activeCourse = btn.dataset.course;
+  chipsEl.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === btn)));
+  renderTiles();
+});
+
+searchEl.addEventListener("input", () => { query = searchEl.value; renderTiles(); });
+
+tilesEl.addEventListener("click", e => {
+  const btn = e.target.closest(".tile");
+  if(btn) openRecipe(btn.dataset.id);
+});
+
+/* ---------------------------------------------------------------
+   recipe view
+--------------------------------------------------------------- */
+function openRecipe(id){
+  current = RECIPES.find(r => r.id === id);
+  servings = current.serves;
+  doneSteps = new Set();
+  browseEl.hidden = true;
+  recipeEl.hidden = false;
+  renderRecipe();
+  window.scrollTo(0, 0);
+  recipeEl.querySelector(".back").focus();
+}
+
+function closeRecipe(){
+  const id = current.id;
+  current = null;
+  recipeEl.hidden = true;
+  recipeEl.innerHTML = "";
+  browseEl.hidden = false;
+  const back = tilesEl.querySelector('.tile[data-id="'+id+'"]');
+  if(back) back.focus();
+}
+
+function ingredientsHTML(){
+  const f = servings / current.serves;
+  return current.groups.map(g =>
+    '<h3 class="grp">'+esc(g.name)+'</h3><ul class="ing">'+
+    g.items.map(i => {
+      const amount = i.fixed ? i.q : i.q * f;
+      return '<li><span class="q">'+formatQty(amount)+' '+esc(i.u)+'</span>'+
+        '<span class="n">'+esc(i.n)+(i.note ? '<small>'+esc(i.note)+'</small>' : '')+'</span></li>';
+    }).join("")+'</ul>'
+  ).join("");
+}
+
+function stepsHTML(){
+  return current.steps.map((s,idx) =>
+    '<li class="'+(doneSteps.has(idx) ? "done" : "")+'"><span class="box">'+
+      '<input type="checkbox" id="s'+idx+'" data-step="'+idx+'" '+(doneSteps.has(idx) ? "checked" : "")+'>'+
+      '<label for="s'+idx+'"><span class="t">'+esc(s.t)+
+        (s.time ? '<span class="clock">'+esc(s.time)+'</span>' : '')+'</span>'+
+        '<p>'+esc(s.d)+'</p></label>'+
+    '</span></li>'
+  ).join("");
+}
+
+function renderRecipe(){
+  const c = courseOf(current.course);
+  recipeEl.innerHTML =
+    '<button class="back">← All recipes</button>'+
+    '<div class="rhead">'+
+      '<h2>'+esc(current.name)+'</h2>'+
+      '<p class="gloss">'+esc(current.gloss)+'</p>'+
+      '<p class="facts"><span><b>'+esc(c.label)+'</b></span><span>Time <b>'+esc(current.time)+'</b></span>'+
+      '<span>Written for <b>'+current.serves+'</b></span><span>'+esc(current.level)+'</span></p>'+
+    '</div>'+
+    '<p class="intro">'+esc(current.intro)+'</p>'+
+    '<div class="cols">'+
+      '<div class="panel">'+
+        '<div class="scaler">'+
+          '<span class="lab">Servings</span>'+
+          '<button class="step-btn" data-delta="-1" aria-label="One serving fewer">−</button>'+
+          '<span class="serves" id="serves" aria-live="polite">'+servings+'</span>'+
+          '<button class="step-btn" data-delta="1" aria-label="One serving more">+</button>'+
+        '</div>'+
+        '<div id="ing">'+ingredientsHTML()+'</div>'+
+      '</div>'+
+      '<div>'+
+        '<div class="stepshead"><h3>Method</h3>'+
+          '<span class="progress" id="progress"></span>'+
+          '<button class="reset" id="reset">Clear ticks</button>'+
+          '<button class="print" id="print">Print</button></div>'+
+        '<ol class="steps" id="steps">'+stepsHTML()+'</ol>'+
+        '<div class="notes"><h3>Cook\u2019s notes</h3><ul>'+
+          current.notes.map(n => '<li>'+esc(n)+'</li>').join("")+
+        '</ul></div>'+
+      '</div>'+
+    '</div>';
+  updateProgress();
+}
+
+function updateProgress(){
+  const p = document.getElementById("progress");
+  if(p) p.textContent = doneSteps.size + " of " + current.steps.length + " steps done";
+}
+
+recipeEl.addEventListener("click", e => {
+  if(e.target.closest(".back")) { closeRecipe(); return; }
+
+  const stepBtn = e.target.closest(".step-btn");
+  if(stepBtn){
+    const next = servings + Number(stepBtn.dataset.delta);
+    servings = Math.min(24, Math.max(1, next));
+    document.getElementById("serves").textContent = servings;
+    document.getElementById("ing").innerHTML = ingredientsHTML();
+    recipeEl.querySelectorAll(".step-btn").forEach(b => {
+      const d = Number(b.dataset.delta);
+      b.disabled = (d < 0 && servings === 1) || (d > 0 && servings === 24);
+    });
+    return;
+  }
+
+  if(e.target.id === "reset"){
+    doneSteps = new Set();
+    document.getElementById("steps").innerHTML = stepsHTML();
+    updateProgress();
+    return;
+  }
+
+  if(e.target.id === "print"){ window.print(); }
+});
+
+recipeEl.addEventListener("change", e => {
+  const box = e.target.closest("input[type=checkbox]");
+  if(!box) return;
+  const idx = Number(box.dataset.step);
+  if(box.checked) doneSteps.add(idx); else doneSteps.delete(idx);
+  box.closest("li").classList.toggle("done", box.checked);
+  updateProgress();
+});
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && current) closeRecipe();
+});
+
+/* ---------------------------------------------------------------
+   glossary
+--------------------------------------------------------------- */
+document.getElementById("gloss").innerHTML = GLOSSARY.map(g =>
+  '<div><dt>'+esc(g.t)+'<span>'+esc(g.s)+'</span></dt><dd>'+esc(g.d)+'</dd></div>'
+).join("");
+
+renderTiles();
+</script>
+</body>
+</html>
